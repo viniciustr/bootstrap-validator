@@ -107,8 +107,19 @@
 
     this.runValidators($el).done(function (errors) {
       $el.data('bs.validator.errors', errors)
+      
+      self.$element.trigger($.Event('beforeShow.bs.validator', {relatedTarget: $el[0], detail: errors}));
 
-      errors.length ? self.showErrors($el) : self.clearErrors($el)
+      //errors.length ? self.showErrors($el) : self.clearErrors($el);
+      
+      if (errors.length) {
+        self.showErrors($el);
+        self.$element.trigger($.Event('errorsfound.bs.validator', {relatedTarget: $el[0], detail: errors}));
+      }
+      else {
+        self.$element.trigger($.Event('validvalue.bs.validator', {relatedTarget: $el[0], detail: errors}));
+        self.clearErrors($el);
+      }
 
       if (!prevErrors || errors.toString() !== prevErrors.toString()) {
         e = errors.length
